@@ -1,6 +1,6 @@
-# Food App
+# E-Commerce App
 
-Welcome to the Food App! This project is a groceries e-commerce app built using Firebase as the backend. 
+Welcome to the E-commerce App! This project is a groceries e-commerce app built using Firebase as the backend. 
 
 ## Getting Started
 
