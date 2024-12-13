@@ -1,0 +1,80 @@
+.my-autocomplete .MuiOutlinedInput-notchedOutline {
+   border: none;
+}
+.my-autocomplete {
+   width: 250px;
+   border-right: 1px solid #29a56c;
+   height: 100%;
+   box-sizing: border-box;
+   display: flex;
+   align-items: center;
+}
+.dark .my-autocomplete {
+   border-right: 1px solid #fff;
+}
+
+.my-autocomplete .MuiInputLabel-outlined {
+   color: #000;
+}
+.dark .my-autocomplete .MuiInputLabel-outlined {
+   color: #fff;
+}
+.dark .MuiInputBase-root {
+   color: #fff;
+}
+.dark
+   .css-1glvl0p-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-clearIndicator {
+   color: #fff;
+}
+.dark .css-i4bv87-MuiSvgIcon-root {
+   color: #fff;
+}
+.dark
+   .css-qzbt6i-MuiButtonBase-root-MuiIconButton-root-MuiAutocomplete-popupIndicator {
+   color: #fff;
+}
+
+.my-autocomplete .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+   border: none;
+}
+
+.my-autocomplete .MuiInputLabel-outlined.MuiInputLabel-shrink {
+   display: none;
+}
+
+.Search {
+   border: 1px solid #29a56c;
+   border-radius: 5px;
+   gap: 0 20px;
+}
+.dark .Search {
+   border: 1px solid #fff;
+}
+
+.search-icon {
+   margin-left: 10px;
+   margin-right: 10px;
+   color: #29a56c;
+}
+.dark input::placeholder {
+   color: white;
+}
+.NavbarLeft {
+   line-height: 44px;
+   border-radius: 5px;
+   padding: 0 20px;
+   font-family: 'Quicksand', sans-serif;
+   font-size: 16px;
+   color: #fff;
+   background: #3bb77e;
+}
+.NavbarBorder {
+   border-top: 1px solid #ececec;
+   border-bottom: 1px solid #ececec;
+  
+}
+
+.dark .NavbarBorder {
+   border-top: 1px solid #fff;
+   border-bottom: 1px solid #fff;
+}

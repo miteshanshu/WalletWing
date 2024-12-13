@@ -1,0 +1,118 @@
+.item {
+   display: flex;
+   justify-content: space-around;
+   align-items: center;
+   flex-direction: column;
+   border-radius: 15px;
+   cursor: pointer;
+   width: 150px !important;
+   transition: all 0.3s ease-in-out;
+   background: #f4f6fa;
+   min-height: 170px;
+}
+.dark .item {
+   background: #111827;
+   border: 1px solid white;
+}
+.dark .category h3 {
+   color: #fff;
+}
+.item img,
+h3 {
+   transition: all 0.3s ease-in-out;
+}
+.item:hover img {
+   transform: scale(1.1);
+}
+.item:hover h3 {
+   color: #3bb77e !important;
+}
+.item img {
+   max-width: 80px;
+}
+.item:hover {
+   border: 1px solid #3bb77e;
+   color: #3bb77e !important;
+}
+.item .Shop-by-Categories-img {
+   object-fit: cover;
+   max-width: 60px !important;
+}
+.item:hover .Shop-by-Categories-img {
+   transform: scale(1);
+}
+
+.custom-prevSlider {
+   background-color: #f2f3f4;
+   color: #7e7e7e;
+}
+.dark .custom-prevSlider {
+   background-color: white;
+   color: #000;
+}
+.dark .custom-prevSlider:hover {
+   background-color: white;
+   color: #000;
+}
+.dark .custom-nextSlider {
+   background-color: white;
+   color: #000;
+}
+.dark .custom-nextSlider:hover {
+   background-color: white;
+   color: #000;
+}
+
+.custom-nextSlider {
+   background-color: #f2f3f4;
+   color: #7e7e7e;
+}
+.paragraph p {
+   padding: 0 12px;
+   background: none;
+   font-size: 16px;
+   color: #253d4e;
+   font-weight: 700;
+   cursor: pointer;
+   transition: all 0.3s ease-in-out;
+}
+.dark .paragraph p {
+   color: #fff;
+}
+
+.paragraph p:hover {
+   color: #3bb77e !important;
+   margin-bottom: 0.3rem;
+}
+
+.custom-prevSlider:hover {
+   background-color: #000;
+   color: #fff;
+}
+
+.custom-nextSlider:hover {
+   background-color: #000;
+   color: #fff;
+}
+.dark .custom-prevSlider:hover {
+   background-color: #fff;
+   color: #000;
+}
+.dark .custom-nextSlider:hover {
+   background-color: #fff;
+   color: #000;
+}
+
+.react-multi-carousel-dot--active button {
+   background-color: #3bb77e !important;
+}
+.react-multi-carousel-dot button {
+   height: 12px !important;
+   width: 12px !important;
+   border: none !important;
+   background-color: #111827;
+}
+
+.react-multi-carousel-track {
+   transition: transform 0.5s ease;
+}
