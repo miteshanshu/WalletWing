@@ -1,8 +1,10 @@
 # WalletWing
 
-A storefront demo built with React and Vite. It has product browsing, cart and wishlist state, product comparison, and Firebase sign-in. It is not a complete online store: the checkout screen does not take payments or create orders.
+I built WalletWing with React and Vite. You can browse products, use the cart and wishlist, compare products and sign in with Firebase.
 
-## What's in the code
+It's a storefront demo. The checkout screens are in place; connecting payments and order creation is the next step. Right now, checkout doesn't take payments or create orders.
+
+## What I added
 
 - Product data fetched from a hosted JSON endpoint on npoint.io.
 - Category and subcategory pages, text search, brand and price filters, sorting and pagination.
@@ -13,19 +15,19 @@ A storefront demo built with React and Vite. It has product browsing, cart and w
 - Light and dark themes, stored in the browser.
 - Checkout, account, contact and other storefront screens.
 
-## What's still a demo
+## Demo scope and next steps
 
-The billing and shipping forms are UI only. The payment choices and logos do not connect to a payment service. The "Place an Order" link does not submit anything.
+I added the billing and shipping forms, payment choices and logos as part of the checkout screens. Connecting a payment service is the next step. For now, the "Place an Order" link does not submit anything.
 
-There is no order API or order database in this repo. The account page displays sample orders, and the separate order page is empty. Account-edit forms and the set-new-password screen are not connected to Firebase updates. The latter only checks whether the two entered passwords match.
+An order API and database are the next pieces to add. For now, I use sample orders on the account page, and the separate order page is empty. The account-edit forms and set-new-password screen are also ready for Firebase update wiring. Currently, that password screen only checks whether the two passwords match.
 
-Product ratings and reviews are display content, not a saved review system. Authentication is connected to Firebase, but it does not make the checkout or account screens a protected backend workflow.
+I use display content for ratings and reviews. Saving reviews would need its own system. Firebase handles authentication; protecting the checkout and account workflow through a backend is a separate next step.
 
-## Stack
+## What I used
 
 React 18, Vite, React Router, Redux Toolkit, Redux Persist, Firebase Authentication, Axios, Tailwind CSS and Material UI.
 
-## Local setup
+## Run it locally
 
 Install the dependencies:
 
@@ -53,7 +55,7 @@ Start the development server:
 npm run dev
 ```
 
-Product browsing also needs the JSON endpoint configured in `src/store/dataSlice.js`. It expects a response with a `productData` field. To use your own data, change that endpoint and keep the data shape the UI expects.
+I fetch the products through the JSON endpoint in `src/store/dataSlice.js`. It expects a response with a `productData` field. If you want to use your own data, change the endpoint and keep the same data shape.
 
 Vite exposes `VITE_` variables to browser code. Use Firebase web-app configuration here, not a service-account key or an admin credential.
 
