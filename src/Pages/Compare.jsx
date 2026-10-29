@@ -64,7 +64,7 @@ export default function Compare() {
               {[
                 ["Price", (p) => money(p.price)],
                 ["Brand", (p) => p.brand || "—"],
-                ["Rating", (p) => `${p.rating} / 5`],
+                ["Rating", (p) => (p.rating ? `${p.rating} / 5` : "Not rated yet")],
                 ["Description", (p) => p.description || "See product details"],
               ].map(([label, value]) => (
                 <tr key={label}>

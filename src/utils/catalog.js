@@ -1,6 +1,8 @@
 import bundledCatalog from "../../db.json";
+import { applyPhotos } from "./photos";
+import { applyCatalogPatch } from "./catalogPatch";
 
-export const catalog = bundledCatalog.productData;
+export const catalog = applyPhotos(applyCatalogPatch(bundledCatalog.productData));
 export const slugify = (value = "") =>
   String(value).trim().replace(/\s+/g, "-").toLowerCase();
 export const allProducts = (data = catalog) =>

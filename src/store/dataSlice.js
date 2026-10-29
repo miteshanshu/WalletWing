@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { catalog, validCatalog } from "../utils/catalog";
+import { applyPhotos } from "../utils/photos";
+import { applyCatalogPatch } from "../utils/catalogPatch";
 
 export const fetchData = createAsyncThunk(
   "data/fetchData",
@@ -13,7 +15,7 @@ export const fetchData = createAsyncThunk(
       );
       if (!validCatalog(response.data?.productData))
         throw new Error("Invalid catalog response");
-      return response.data.productData;
+      return applyPhotos(applyCatalogPatch(response.data.productData));
     } catch (error) {
       return rejectWithValue(error.message || "Catalog update unavailable");
     }
