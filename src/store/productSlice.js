@@ -1,5 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
-
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   productItems: [],
@@ -7,17 +6,21 @@ const initialState = {
 };
 
 const productCompareSlice = createSlice({
-  name: 'productCompare',
+  name: "productCompare",
   initialState,
   reducers: {
     addToCompare: (state, action) => {
-      const productExists = state.productItems.find(item => item.id === action.payload.id);
-      if (!productExists) {
+      const productExists = state.productItems.find(
+        (item) => item.id === action.payload.id,
+      );
+      if (!productExists && state.productItems.length < state.limit) {
         state.productItems.push(action.payload);
       }
     },
     removeFromCompare: (state, action) => {
-      state.productItems = state.productItems.filter((item) => item.id !== action.payload);
+      state.productItems = state.productItems.filter(
+        (item) => item.id !== action.payload,
+      );
     },
     removeAllFromCompare: (state) => {
       state.productItems = [];
@@ -25,6 +28,7 @@ const productCompareSlice = createSlice({
   },
 });
 
-export const { addToCompare, removeFromCompare,removeAllFromCompare } = productCompareSlice.actions;
+export const { addToCompare, removeFromCompare, removeAllFromCompare } =
+  productCompareSlice.actions;
 
 export default productCompareSlice.reducer;

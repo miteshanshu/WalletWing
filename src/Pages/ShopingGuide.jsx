@@ -1,115 +1,61 @@
-/* eslint-disable react/no-unescaped-entities */
-import { Link } from 'react-router-dom';
-import GuideImg  from '../assets/guide-1.png'
+import { Link } from "react-router-dom";
+import GuideImg from "../assets/guide-1.png";
 
-
-const ShopingGuide = () => {
-    const date = new Date();
-    date.setDate(date.getDate() - 7);
-    const dateString = date.toLocaleDateString('en-US', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-
+export default function ShopingGuide() {
   return (
-    <div className='w-[75%] mx-auto py-[40px]'>
-      <div className='single-header style-2'>
-        <h2 className='text-[40px] font-bold text-[#253D4E] leading-6 dark:text-white'>
-          Purchase Guide
-        </h2>
-        <div className='text-[14px] mt-[25px] mb-[25px]  text-[#7e7e7e] flex justify-start items-center gap-4 shoping-guide'>
-          <span className='post-by'>
-            By{' '}
-            <Link to={'#'} className='text-[#3BB77E]'>
-              Hunter
-            </Link>
-          </span>
-          <span className='post-on has-dot dark:text-white'>{dateString}</span>
-          <span className='time-reading has-dot dark:text-white'>
-            8 mins read
-          </span>
-          <span className='hit-count has-dot dark:text-white'>29k Views</span>
+    <div className="ww-container ww-page">
+      <div className="ww-page-heading">
+        <div>
+          <p className="ww-eyebrow">Getting started</p>
+          <h1>Shopping guide</h1>
+          <p className="ww-muted">Explore Wallet Wing with a practice order.</p>
         </div>
       </div>
-      <figure className='mb-8 rounded-2xl'>
-        <img src={GuideImg} alt='Guide' className='w-full rounded-2xl' />
-      </figure>
-      <div className='mb-12 single-content'>
-        <ul className='mb-7'>
-          <li className='custom-list-inside my-2'>Name</li>
-          <li className='custom-list-inside my-2'>Email Address</li>
-          <li className='custom-list-inside my-2'>Mobile Phone Number</li>
-        </ul>
-        <div className='mb-4'>
-          <h3>2. Select Product</h3>
-          <p>
-            Our store offers a wide range of products. Browse through the
-            categories, check out the new arrivals, and read the product
-            descriptions to make an informed purchase.
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>3. Confirm Order Content</h3>
-          <p>
-            Before proceeding to payment, make sure to review your order. Check
-            the product names, quantities, and prices. You can also save
-            products for later or add them to your wishlist.
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>4. Make Payment</h3>
-          <p>
-            We offer several payment methods for your convenience. Choose the
-            one that suits you best and proceed to make the payment. Don't
-            forget to apply any discount codes you have!
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>5. Transaction Completed</h3>
-          <p>
-            Once the payment is successful, your transaction is completed. You
-            will receive a confirmation email with the details of your order and
-            the estimated delivery date.
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>6. Accepted Credit Cards</h3>
-          <ul>
-            <li className='custom-list-inside my-2'>Visa</li>
-            <li className='custom-list-inside my-2'>Mastercards</li>
-            <li className='custom-list-inside my-2'>American Express</li>
-            <li className='custom-list-inside my-2'>Discover</li>
-          </ul>
-          <p>
-            We accept the above credit cards. All transactions are secure and
-            encrypted.
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>7. Customer Support </h3>
-          <p>
-            If you have any questions or need assistance, our customer support
-            team is here to help. Contact us via email, phone, or
-            <Link
-              to={'/contact-us'}
-              className='text-blue-500 hover:underline ml-2'
-            >
-              message us
-            </Link>
-            .
-          </p>
-        </div>
-        <div className='mb-4'>
-          <h3>8. Feedback and Suggestions </h3>
-          <p>
-            We value your feedback and suggestions. Let us know how we can
-            improve our services and products to better serve you.
-          </p>
-        </div>
+      <p className="ww-notice">
+        This is a demo storefront. No payments, confirmation emails or
+        deliveries are sent.
+      </p>
+      <img
+        src={GuideImg}
+        alt="Grocery shopping"
+        className="w-full rounded-2xl mb-8"
+      />
+      <div className="single-content">
+        <h2>1. Find a product</h2>
+        <p>
+          Browse categories or search by product or brand. Use the filters,
+          sorting and page controls to narrow your results.
+        </p>
+        <h2>2. Choose your options</h2>
+        <p>
+          Open a product, choose a size or weight when offered, set the
+          quantity, then add it to your cart. Save favourites to your wishlist
+          or compare up to four products.
+        </p>
+        <h2>3. Review your cart</h2>
+        <p>
+          Update quantities or remove items before checkout. The demo adds 10%
+          tax and ₹100 delivery for baskets below ₹500. Apply PROMO10 for a 10%
+          discount on the displayed order total.
+        </p>
+        <h2>4. Try checkout</h2>
+        <p>
+          Use sample contact and delivery details. No payment details are
+          required. Place demo order saves the basket and totals on this device,
+          then empties your cart. Contact and address fields are not saved or
+          sent.
+        </p>
+        <h2>5. View your demo order</h2>
+        <p>
+          The <Link to="/Order">demo order history</Link> keeps up to 20
+          practice orders in this browser. It does not represent real purchases.
+        </p>
+        <h2>Need help?</h2>
+        <p>
+          <Link to="/contact-us">Contact Wallet Wing</Link> to prepare an email
+          in your own email app.
+        </p>
       </div>
     </div>
   );
-};
-
-export default ShopingGuide;
+}

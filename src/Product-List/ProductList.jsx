@@ -1,509 +1,241 @@
-/* eslint-disable react/prop-types */
-import { Pagination, Rating } from '@mui/material';
-import Breadcrumb from '../Common/Breadcrumb';
-import SideBar from '../Common/SideBar';
-import Card from '../components/Card/Card';
-import { styled } from '@mui/system';
-import { Fragment, useEffect, useState } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { FiChevronDown, FiGrid, FiCheck, FiShoppingCart } from 'react-icons/fi';
-import { Link, useParams } from 'react-router-dom';
-import { TbSortDescending2 } from 'react-icons/tb';
-import Countdown from 'react-countdown';
-import { useSelector } from 'react-redux';
-import noProduct from '../assets/pnf.webp';
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { FiSliders, FiX, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import Card from "../components/Card/Card";
+import { allProducts, money, slugify } from "../utils/catalog";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
-
-const StyledPagination = styled(Pagination)({
-  '& .MuiPaginationItem-root': {
-    color: '#7E7E7E',
-    border: 'none',
-    outline: 'none',
-    backgroundColor: '#F2F3F4',
-    fontSize: '18px',
-    height: '40px',
-    width: '40px',
-    borderRadius: '50%',
-    margin: '0 5px',
-  },
-  '& .Mui-selected': {
-    backgroundColor: '#3BB77E !important',
-    color: 'white !important',
-  },
-  '& .MuiPaginationItem-root:hover': {
-    backgroundColor: '#3BB77E !important',
-    color: 'white !important',
-  },
-});
-
-const menuItems = [
-  { text: 4 },
-  { text: 8 },
-  { text: 12 },
-  { text: 16 },
-  { text: 20 },
-];
-const menuItems2 = [
-  { text: 'A to Z', filterKey: 'aToZ' },
-  { text: 'Z to A', filterKey: 'zToA' },
-  { text: 'Price, Low to High', filterKey: 'priceLowToHigh' },
-  { text: 'Price, High to Low', filterKey: 'priceHighToLow' },
-  { text: 'Rating', filterKey: 'rating' },
-];
-
-
-
-
-const ProductList = () => {
-  // State variables
-  const [isOpen1, setIsOpen1] = useState(false);
-  const [isOpen2, setIsOpen2] = useState(false);
-  const [selectedItem1, setSelectedItem1] = useState(12);
-  const [selectedItem2, setSelectedItem2] = useState('A to Z');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productData, setProductData] = useState([]);
-  const [brand, setBrand] = useState('');
-
-
-  const HighestPrice = Math.max(...productData.map((product) => product.price));
-
-
-  const [priceRange, setPriceRange] = useState([0, HighestPrice]);
-
-  useEffect(() => {
-    const newHighestPrice = Math.max(
-      ...productData.map((product) => product.price)
-    );
-    setPriceRange([0, newHighestPrice]);
-  }, [productData, HighestPrice]); 
-  
-
-
-  // Data from Redux store
+export default function ProductList() {
   const data = useSelector((state) => state.data.data);
-  const searchResults = useSelector(
-    (state) => state.setSearchResult.searchResults
-  );
-
   const { category, subcategory } = useParams();
-
-  
-  
-
-
-
-
-
-  useEffect(() => {
-    let productData = [];
-    if (searchResults && searchResults.length > 0) {
-      productData = searchResults;
-    } else if (category) {
-      if (subcategory) {
-        productData = data
-          .filter(
-            (item) =>
-              item.cat_name.replace(/\s+/g, '-').toLowerCase() === category
-          )
-          .flatMap((item) => item.items)
-          .filter(
-            (item) =>
-              item.cat_name.replace(/\s+/g, '-').toLowerCase() === subcategory
-          )
-          .flatMap((item) => item.products);
-      } else {
-        productData = data
-          .filter(
-            (item) =>
-              item.cat_name.replace(/\s+/g, '-').toLowerCase() === category
-          )
-          .flatMap((item) => item.items.flatMap((items) => items.products));
-      }
-    } else {
-      productData = data.flatMap((item) =>
-        item.items.flatMap((items) => items.products)
-      );
-    }
-    setProductData(productData);
-  }, [searchResults, category, subcategory, data]);
-
-
-  // Filter products based on selectedItem2
-  const filterProducts = (products) => {
-    let result = products;
-
-    // Filter by price range
-    result = result.filter(
+  const [params] = useSearchParams();
+  const query = (params.get("q") || "").trim();
+  const [brand, setBrand] = useState("");
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [sort, setSort] = useState("name");
+  const [pageSize, setPageSize] = useState(12);
+  const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const products = useMemo(
+    () =>
+      allProducts(data).filter(
+        (product) =>
+          (!category || slugify(product.category) === slugify(category)) &&
+          (!subcategory ||
+            slugify(product.subcategory) === slugify(subcategory)) &&
+          (!query ||
+            `${product.productName} ${product.brand}`
+              .toLowerCase()
+              .includes(query.toLowerCase())),
+      ),
+    [data, category, subcategory, query],
+  );
+  const highest = Math.max(
+    0,
+    ...products.map((product) => Number(product.price)),
+  );
+  const priceLimit = maxPrice == null ? highest : Math.min(maxPrice, highest);
+  const brands = [
+    ...new Map(
+      products.map((product) => [product.brand.toLowerCase(), product.brand]),
+    ).values(),
+  ].sort();
+  const filtered = products
+    .filter(
       (product) =>
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-    );
-
-    // Filter by brand
-    if (brand) {
-      result = result.filter((product) => product.brand === brand);
-    }
-
-    switch (selectedItem2) {
-      case 'A to Z':
-        result.sort((a, b) => a.productName.localeCompare(b.productName));
-        break;
-      case 'Z to A':
-        result.sort((a, b) => b.productName.localeCompare(a.productName));
-        break;
-      case 'Price, Low to High':
-        result.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-        break;
-      case 'Price, High to Low':
-        result.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-        break;
-      case 'Rating':
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      default:
-        break;
-    }
-    return result;
+        (!brand || product.brand.toLowerCase() === brand.toLowerCase()) &&
+        Number(product.price) <= priceLimit,
+    )
+    .sort((a, b) => {
+      if (sort === "price-up") return a.price - b.price;
+      if (sort === "price-down") return b.price - a.price;
+      if (sort === "rating") return b.rating - a.rating;
+      if (sort === "name-desc")
+        return b.productName.localeCompare(a.productName);
+      return a.productName.localeCompare(b.productName);
+    });
+  useEffect(() => {
+    setBrand("");
+    setMaxPrice(null);
+    setPage(1);
+  }, [category, subcategory, query]);
+  useEffect(() => setPage(1), [brand, maxPrice, sort, pageSize]);
+  const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const currentPage = Math.min(page, pages);
+  const visible = filtered.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+  const title = query
+    ? `Results for “${query}”`
+    : (subcategory || category || "All products").replace(/-/g, " ");
+  const clear = () => {
+    setBrand("");
+    setMaxPrice(null);
+    setPage(1);
   };
-
-  // Apply filtering and sorting
-  const filteredProducts = filterProducts(productData);
-
-  // Pagination
-  const startIndex = (currentPage - 1) * selectedItem1;
-  const endIndex = startIndex + selectedItem1;
-  const currentItems = filteredProducts.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(filteredProducts.length / selectedItem1);
-
-  // Event handlers
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  //Product Show
-  const products = productData.slice(0, 4);
-
-  const handleButtonClick1 = () => {
-    setIsOpen1(!isOpen1);
-    setIsOpen2(false);
-  };
-
-  const handleItemClick1 = (item) => {
-    setIsOpen1(false);
-    setSelectedItem1(item);
-  };
-
-  const handleButtonClick2 = () => {
-    setIsOpen2(!isOpen2);
-    setIsOpen1(false);
-  };
-
-  const handleItemClick2 = (item) => {
-    setIsOpen2(false);
-    setSelectedItem2(item);
-  };
-
-  // Local storage handling
-  let endTime = localStorage.getItem('endTime');
-
-  if (!endTime || Date.now() - Number(endTime) > 1 * 60 * 60 * 1000) {
-    endTime = Date.now() + 24 * 60 * 60 * 1000;
-    localStorage.setItem('endTime', endTime);
-  }
-
-  endTime = Number(endTime);
-
   return (
-    <div className='px-10 my-5'>
-      <div className='breadcrumbs'>
-        <h1 className='text-[38px] text-[#253D4E] font-semibold dark:text-white'>
-          {category ? category.replace(/-/g, ' ').toUpperCase() : 'PRODUCTS'}
-        </h1>
-        <Breadcrumb
-          titles={[
-            'Home',
-            category ? category.replace(/-/g, ' ').toUpperCase() : 'PRODUCTS',
-            subcategory
-              ? subcategory.replace(/-/g, ' ').toUpperCase()
-              : 'DETAILS',
-          ]}
-        />
-      </div>
-
-      <div className='product-list py-10 flex justify-between'>
-        <div className='w-[23%]'>
-          <SideBar
-            priceRange={priceRange}
-            productData={productData}
-            setPriceRange={setPriceRange}
-            setBrand={setBrand}
-            HighestPrice={HighestPrice}
-          />
+    <div className="ww-container ww-page">
+      <div className="ww-page-heading">
+        <div>
+          <p className="ww-eyebrow">
+            <Link to="/">Home</Link> / Shop
+          </p>
+          <h1 className="capitalize">{title}</h1>
+          <p className="ww-muted">
+            {filtered.length} {filtered.length === 1 ? "product" : "products"}{" "}
+            to explore
+          </p>
         </div>
-        <div className='w-3/4'>
-          <div className='shop-product-fillter'>
-            <div className='totall-product'>
-              <p className='dark:text-white'>
-                We found <strong className='text-brand'>{selectedItem1}</strong>{' '}
-                items for you!
-              </p>
-            </div>
-            <div className=''>
-              <Menu
-                as='div'
-                className='relative inline-block text-left product-wrap z-[55] mr-3'
-              >
-                <button
-                  onClick={handleButtonClick1}
-                  className='flex items-center w-full justify-center gap-x-1.5 rounded-md bg-white px-1 py-2 text-sm font-semibold text-gray-600 transition-all duration-300 cursor-pointer'
+      </div>
+      <div className="ww-catalog-layout">
+        <button
+          className="ww-button ww-button-outline ww-filter-toggle"
+          onClick={() => setShowFilters(!showFilters)}
+          aria-expanded={showFilters}
+          aria-controls="catalog-filters"
+        >
+          <FiSliders />
+          {showFilters ? "Hide filters" : "Filter products"}
+        </button>
+        <aside
+          id="catalog-filters"
+          className={`ww-filters ${showFilters ? "is-open" : ""}`}
+          aria-label="Product filters"
+        >
+          <div className="ww-row">
+            <h2>Filters</h2>
+            <button className="ww-text-button" onClick={clear}>
+              Reset
+            </button>
+          </div>
+          <label htmlFor="brand-filter">Brand</label>
+          <select
+            id="brand-filter"
+            value={brand}
+            onChange={(event) => setBrand(event.target.value)}
+          >
+            <option value="">All brands</option>
+            {brands.map((value) => (
+              <option key={value}>{value}</option>
+            ))}
+          </select>
+          <label htmlFor="price-filter">
+            Maximum price <strong>{money(priceLimit)}</strong>
+          </label>
+          <input
+            id="price-filter"
+            type="range"
+            min="0"
+            max={highest || 1}
+            disabled={!highest}
+            value={priceLimit}
+            onChange={(event) => setMaxPrice(Number(event.target.value))}
+          />
+          <div className="ww-row ww-muted">
+            <span>₹0</span>
+            <span>{money(highest)}</span>
+          </div>
+          <h3>Categories</h3>
+          <Link className={!category ? "active" : ""} to="/product">
+            All products
+          </Link>
+          {data.map((item) => (
+            <Link
+              className={
+                slugify(item.cat_name) === slugify(category) ? "active" : ""
+              }
+              key={item.cat_name}
+              to={`/${slugify(item.cat_name)}`}
+            >
+              {item.cat_name}
+            </Link>
+          ))}
+        </aside>
+        <section className="ww-catalog-results" aria-label="Products">
+          <div className="ww-catalog-toolbar">
+            <span className="ww-muted" aria-live="polite">
+              {filtered.length
+                ? `${(currentPage - 1) * pageSize + 1}–${Math.min(currentPage * pageSize, filtered.length)} of ${filtered.length}`
+                : "No matches"}
+            </span>
+            <div className="ww-sort-controls">
+              <label>
+                Show
+                <select
+                  value={pageSize}
+                  onChange={(event) => setPageSize(Number(event.target.value))}
                 >
-                  <FiGrid />
-                  Show: {selectedItem1}
-                  <FiChevronDown
-                    className={`ml-1 text-gray-600 transform ${
-                      isOpen1 ? 'rotate-180' : 'rotate-0'
-                    } transition-transform duration-300`}
-                  />
-                </button>
-                <Transition
-                  show={isOpen1}
-                  as={Fragment}
-                  enter='transition ease-out duration-300'
-                  enterFrom='opacity-0 scale-95'
-                  enterTo='opacity-100 scale-100'
-                  leave='transition ease-in duration-200'
-                  leaveFrom='opacity-100 scale-100'
-                  leaveTo='opacity-0 scale-95'
+                  <option value={12}>12</option>
+                  <option value={24}>24</option>
+                  <option value={48}>48</option>
+                </select>
+              </label>
+              <label>
+                Sort by
+                <select
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value)}
                 >
-                  <Menu.Items className='absolute   z-10 mt-4  origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-[90%]'>
-                    <div className='py-1'>
-                      {menuItems.map((menuItem, index) => (
-                        <Menu.Item key={index}>
-                          {({ active }) => (
-                            <Link
-                              to={menuItem.path}
-                              onClick={() => handleItemClick1(menuItem.text)}
-                              className={classNames(
-                                active
-                                  ? 'bg-gray-100 text-gray-900'
-                                  : 'text-gray-700',
-                                'flex items-center px-4 py-2 text-sm transition-all duration-300 leading-7'
-                              )}
-                            >
-                              {menuItem.text === selectedItem1 && (
-                                <FiCheck color='#3BB77E' size={18} />
-                              )}
-                              {menuItem.text}
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-              <Menu
-                as='div'
-                className='relative inline-block text-left product-wrap z-[55]'
-              >
-                <button
-                  onClick={handleButtonClick2}
-                  className='flex items-center w-full justify-center gap-x-1.5 rounded-md bg-white px-1 py-2 text-sm font-semibold text-gray-600 transition-all duration-300 cursor-pointer'
-                >
-                  <TbSortDescending2 />
-                  Sort by: {selectedItem2}
-                  <FiChevronDown
-                    className={`ml-1 text-gray-600 transform ${
-                      isOpen2 ? 'rotate-180' : 'rotate-0'
-                    } transition-transform duration-300`}
-                  />
-                </button>
-                <Transition
-                  show={isOpen2}
-                  as={Fragment}
-                  enter='transition ease-out duration-300'
-                  enterFrom='opacity-0 scale-95'
-                  enterTo='opacity-100 scale-100'
-                  leave='transition ease-in duration-200'
-                  leaveFrom='opacity-100 scale-100'
-                  leaveTo='opacity-0 scale-95'
-                >
-                  <Menu.Items className='absolute right-[-10px]  z-10 mt-4 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none'>
-                    <div className='py-1'>
-                      {menuItems2.map((menuItem, index) => (
-                        <Menu.Item key={index}>
-                          {({ active }) => (
-                            <Link
-                              to={menuItem.path}
-                              onClick={() => handleItemClick2(menuItem.text)}
-                              className={classNames(
-                                active
-                                  ? 'bg-gray-100 text-gray-900'
-                                  : 'text-gray-700',
-                                'flex items-center px-4 py-2 text-sm transition-all duration-300 leading-7'
-                              )}
-                            >
-                              {menuItem.text === selectedItem2 && (
-                                <FiCheck color='#3BB77E' size={18} />
-                              )}
-                              {menuItem.text}
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      ))}
-                    </div>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
+                  <option value="name">Name: A–Z</option>
+                  <option value="name-desc">Name: Z–A</option>
+                  <option value="price-up">Price: low to high</option>
+                  <option value="price-down">Price: high to low</option>
+                  <option value="rating">Top rated</option>
+                </select>
+              </label>
             </div>
           </div>
-          <div className='flex flex-wrap justify-start items-start'>
-            {currentItems.length === 0 ? (
-              <div className='flex justify-center items-center'>
-                <img
-                  src={noProduct}
-                  alt='No Product Found'
-                  className='rounded-2xl'
-                />
-              </div>
-            ) : (
-              currentItems.map((product, index) => (
-                <Link
-                  className='w-[25%] px-2 pb-12'
-                  key={index}
-                  to={`/product/details/${product.id}`}
-                >
-                  <Card
-                    productData={product}
-                    currentImage={product.catImg}
-                    image2={product.productImages[0]}
-                  />
-                </Link>
-              ))
-            )}
-          </div>
-          {currentItems.length === 0 ? null : (
-            <StyledPagination
-              count={totalPages}
-              page={currentPage}
-              onChange={(event, page) => handlePageChange(page)}
-              variant='outlined'
-              shape='rounded'
-            />
+          {(brand || maxPrice != null) && (
+            <button className="ww-filter-chip" onClick={clear}>
+              Clear filters <FiX />
+            </button>
           )}
-
-          <div className='pt-10' id='deals'>
-            <div className='section-title'>
-              <h3 className='dark:text-white'>Deals Of The Day</h3>
-            </div>
-            <div className='product-list flex justify-start gap-4'>
-              {products.map((product) => (
-                <div key={product.id} className='product w-1/4 '>
-                  <div className='product-img'>
-                    <Link to={`/product/details/${product.id}`}>
-                      <img
-                        src={product.catImg}
-                        alt=''
-                        className='rounded-2xl w-[280px] h-[250px] mx-auto'
-                      />
-                    </Link>
-                  </div>
-                  <Link to={`/product/details/${product.id}`} className='block'>
-                    <div className='product-info cursor-pointer transform transition-transform duration-200 hover:-translate-y-1 mx-auto'>
-                      <div className=''>
-                        <Countdown
-                          date={endTime}
-                          renderer={({
-                            days,
-                            hours,
-                            minutes,
-                            seconds,
-                            completed,
-                          }) =>
-                            completed ? (
-                              <div className='expired-badge'>
-                                Deal expired. Try next time.
-                              </div>
-                            ) : (
-                              <div className='flex justify-between items-center gap-3 mt-[-160px]'>
-                                <div className='shadow flex flex-col p-2 px-3 rounded-md text-center product-one text-[#7E7E7E]'>
-                                  <span className='text-[#3BB77E] text-xl'>
-                                    {days}
-                                  </span>{' '}
-                                  Day
-                                </div>
-                                <div className='shadow flex flex-col p-2 px-2 rounded-md text-center product-one text-[#7E7E7E] '>
-                                  <span className='text-[#3BB77E] text-xl'>
-                                    {hours}
-                                  </span>
-                                  Hour
-                                </div>
-                                <div className='shadow flex flex-col p-2 px-3 rounded-md text-center product-one text-[#7E7E7E]'>
-                                  <span className='text-[#3BB77E] text-xl'>
-                                    {minutes}
-                                  </span>
-                                  Min
-                                </div>
-                                <div className='shadow flex flex-col p-2 px-3 rounded-md text-center product-one text-[#7E7E7E]'>
-                                  <span className='text-[#3BB77E] text-xl'>
-                                    {seconds}
-                                  </span>
-                                  Sec
-                                </div>
-                              </div>
-                            )
-                          }
-                        />
-                      </div>
-
-                      <div className='py-[20px] wrap px-[20px] product-one mt-[20px] rounded-md'>
-                        <h3 className='product-title line-clamp-2'>
-                          {product.productName}
-                        </h3>
-                        <Rating
-                          name='half-rating-read'
-                          value={product.rating}
-                          precision={0.5}
-                          readOnly
-                          size='small'
-                        />
-                        <p className='text-[#B6B6B6] text-sm'>
-                          By{' '}
-                          <span className='text-[#3BB77E]'>
-                            {product.brand}
-                          </span>
-                        </p>
-                        <div className='flex justify-between items-center'>
-                          <div>
-                            <span className='price text-md text-[#3BB77E] font-bold'>
-                              ₹{product.price}
-                            </span>
-                            <span className='old-price strike'>
-                              ₹{product.oldPrice}
-                            </span>
-                          </div>
-
-                          <Link
-                            className='add  bg-[#3BB77E] text-white hover:bg-[#29A56C] transform transition-transform hover:text-white duration-200 hover:-translate-y-1'
-                            to=''
-                          >
-                            <FiShoppingCart className='mr-2' />
-                            Add
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
+          {visible.length ? (
+            <div className="ww-product-grid">
+              {visible.map((product) => (
+                <Card key={product.id} productData={product} />
               ))}
             </div>
-          </div>
-        </div>
+          ) : (
+            <div className="ww-empty">
+              <FiSearchEmpty />
+              <h2>No products found</h2>
+              <p>Try another search or clear your filters.</p>
+              <button className="ww-button ww-button-outline" onClick={clear}>
+                Clear filters
+              </button>
+              <Link className="ww-text-button" to="/product">
+                Browse all products
+              </Link>
+            </div>
+          )}
+          {pages > 1 && (
+            <nav className="ww-pagination" aria-label="Product pages">
+              <button
+                aria-label="Previous page"
+                disabled={currentPage === 1}
+                onClick={() => setPage(currentPage - 1)}
+              >
+                <FiChevronLeft />
+              </button>
+              <span>
+                Page {currentPage} of {pages}
+              </span>
+              <button
+                aria-label="Next page"
+                disabled={currentPage === pages}
+                onClick={() => setPage(currentPage + 1)}
+              >
+                <FiChevronRight />
+              </button>
+            </nav>
+          )}
+        </section>
       </div>
     </div>
   );
-};
-
-export default ProductList;
+}
+function FiSearchEmpty() {
+  return <FiSliders size={32} aria-hidden="true" />;
+}

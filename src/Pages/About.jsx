@@ -15,10 +15,8 @@ import icon6 from "../assets/icon-6.svg";
 import about5 from "../assets/about-5.png";
 import { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
-import { FaTwitter, FaInstagram, FaYoutube } from "react-icons/fa";
 import clinet1 from "../assets/clinet1.png";
 import clinet2 from "../assets/client2.jpg";
-import { Link } from "react-router-dom";
 
 const responsive = {
   desktop: {
@@ -57,7 +55,7 @@ const cardData = [
     icon: icon3,
     title: "Free Delivery",
     description:
-      "We provide free shipping on all orders, making your online shopping experience more cost-effective.",
+      "The demo cart includes free delivery for orders of ₹500 and above.",
   },
   {
     id: 4,
@@ -117,7 +115,7 @@ const About = () => {
           setViewPortEntered(false);
         }
       },
-      { root: null, rootMargin: "0px", threshold: 0.1 }
+      { root: null, rootMargin: "0px", threshold: 0.1 },
     );
 
     if (countUpRef.current) {
@@ -132,10 +130,18 @@ const About = () => {
   }, []);
   return (
     <div>
+      <p className="ww-notice ww-container">
+        Wallet Wing is a storefront demo. Orders, payments and deliveries are
+        simulated.
+      </p>
       <div className="about-top pt-16 mb-[50px] dark:text-white">
         <div className="w-[85%] mx-auto flex items-center">
           <div className="flex-none w-1/2">
-            <img src={aboutImg} alt="about" className="rounded-2xl w-[80%] h-[85%]" />
+            <img
+              src={aboutImg}
+              alt="about"
+              className="rounded-2xl w-[80%] h-[85%]"
+            />
           </div>
           <div className="w-1/2">
             <div className="">
@@ -202,7 +208,6 @@ const About = () => {
                 <img src={card.icon} alt="" />
                 <h4 className="dark:text-white">{card.title}</h4>
                 <p className="dark:text-white">{card.description}</p>
-                <Link to={"#"}>Read more</Link>
               </div>
             </div>
           ))}
@@ -210,8 +215,12 @@ const About = () => {
       </div>
 
       <div className="mx-auto w-[85%] flex items-center mb-[60px] dark:text-white">
-        <div style={{ "width": "730px", "paddingRight": "10rem"}}>
-          <img src={about5} alt="girl" style={{ "width": "100%" , "borderRadius":"15px" }} />
+        <div style={{ width: "730px", paddingRight: "10rem" }}>
+          <img
+            src={about5}
+            alt="girl"
+            style={{ width: "100%", borderRadius: "15px" }}
+          />
         </div>
 
         <div className="partner-details w-[33%]">
@@ -338,17 +347,6 @@ const About = () => {
                 <div className="content text-center">
                   <h4 className="mb-5 ">Aanandita</h4>
                   <span className="text-[16px] "></span>
-                  <div className="social-network mt-5 flex justify-center space-x-2 gap-3">
-                    <Link to="#">
-                      <FaTwitter size={20} color="#29A56C" />
-                    </Link>
-                    <Link to="#">
-                      <FaInstagram size={20} color="#29A56C" />
-                    </Link>
-                    <Link to="#">
-                      <FaYoutube size={20} color="#29A56C" />
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
@@ -358,17 +356,6 @@ const About = () => {
                 <div className="content text-center">
                   <h4 className="mb-5 ">Rishabh</h4>
                   <span className="text-[18px] "></span>
-                  <div className="social-network mt-5 flex justify-center space-x-2 gap-3">
-                    <Link to="#">
-                      <FaTwitter size={20} color="#29A56C" />
-                    </Link>
-                    <Link to="#">
-                      <FaInstagram size={20} color="#29A56C" />
-                    </Link>
-                    <Link to="#">
-                      <FaYoutube size={20} color="#29A56C" />
-                    </Link>
-                  </div>
                 </div>
               </div>
             </div>
@@ -383,6 +370,7 @@ const CustomLeftArrow = ({ onClick }) => (
     type="button"
     onClick={onClick}
     className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-[#F2F3F4] text-[#3BB77E] rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-[#3BB77E] hover:text-white"
+    aria-label="Previous photo"
   >
     <FiArrowLeft />
   </button>
@@ -393,6 +381,7 @@ const CustomRightArrow = ({ onClick }) => (
     type="button"
     onClick={onClick}
     className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-[#F2F3F4] text-[#3BB77E] rounded-full w-10 h-10 flex items-center justify-center text-2xl hover:bg-[#3BB77E] hover:text-white"
+    aria-label="Next photo"
   >
     <FiArrowRight />
   </button>
