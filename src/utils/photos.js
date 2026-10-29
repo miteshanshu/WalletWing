@@ -1,15 +1,119 @@
-// Generated images, one per catalogue product id.
+// Generated images, one set per catalogue product id.
 // Brand, product and size follow the catalogue entry.
-const ids = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 77, 78, 79, 80, 82, 83, 84, 85, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]);
+// Each product has one full background photo: a scene shot,
+// or a model-worn shot for apparel.
+const ids = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 55, 56, 57, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 77, 78, 79, 80, 82, 83, 84, 85, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120]);
+const modelIds = new Set([44, 45, 46, 47, 48, 49, 50, 51, 113, 114, 115, 116]);
+const slugs = {
+  1: "good-life-whole-moong-500-g",
+  2: "moong-dal-2-kg",
+  3: "good-life-raw-peanuts-500-g",
+  4: "tata-sampann-unpolished-chilka-moong-500-g",
+  5: "good-life-moong-dal-1-kg",
+  6: "good-life-kabuli-chana-1-kg",
+  7: "angur-oily-toor-dal-5kg",
+  8: "fortune-soya-wadi-chunks-1-kg",
+  9: "gowardhan-pure-cow-ghee-1-l-jar",
+  10: "nestle-everyday-ghee-1-l-carton",
+  11: "amul-cow-ghee-1-l-pouch",
+  12: "amul-cow-ghee-500-ml-pouch",
+  13: "haryana-fresh-rich-desi-danedar-ghee-500-grams-carton",
+  14: "kheduthaat-shudh-ghee-vedic-method-traditional-ghee-1-ltr",
+  15: "aashirvaad-superior-mp-whole-wheat-atta-1-kg",
+  16: "aashirvaad-select-sharbati-whole-wheat-atta-1-kg",
+  17: "aashirvaad-superior-mp-whole-wheat-atta-2-kg",
+  18: "chakki-atta-10-kg",
+  19: "good-life-mp-wheat-chakki-atta-5-kg",
+  20: "fortune-suji-semolina-500-g",
+  21: "wheatkart-whole-wheat-atta-10-kg",
+  22: "good-life-jeera-100-g",
+  23: "maggi-masala-ae-magic-6-g-pack-of-12",
+  24: "good-life-compounded-hing-powder-50-g",
+  25: "veedint-cumin-seeds-jeera-whole-1-kg-pack",
+  26: "organic-tattva-cumin-seeds-100-g",
+  27: "lotus-spices-green-elaichi-10-g",
+  30: "tata-sampann-white-poha-500-g",
+  31: "daawat-rozana-super-basmati-broken-rice-1-kg",
+  32: "elina-long-grain-rice-1-kg",
+  33: "daawat-rozana-gold-basmati-broken-rice-5-kg",
+  34: "daawat-rozana-super-basmati-broken-rice-5-kg",
+  35: "oneplus-nord-ce-2-lite-5g-128-gb-6-gb-ram-blue-tide-mobile",
+  36: "apple-iphone-13-128-gb-midnight-black",
+  37: "tecno-pop-7-pro-64-gb-2-gb-black-smartphone",
+  38: "realme-c55-dlc-64gb-4-gb-ram-sunshower-mobile-phone",
+  39: "poco-m6-pro-5g-6gb-ram-128gb-rom-power-black-smartphone",
+  40: "realme-80-cm-32-inch-hd-ready-led-smart-android-tv-2023",
+  42: "oneplus-108-cm-43-inch-full-hd-android-smart-led-tv-with",
+  43: "tcl-55-qled-smart-google-tv-55c645",
+  44: "bomber-jacket-with-zipper-pockets",
+  45: "mid-rise-skinny-fit-jeans",
+  46: "plutus-men-black-solid-polyester-casual-jacket-m",
+  47: "bullmer-men-beige-cotton-blend-printed-single-sweatshirts",
+  48: "men-checked-slim-fit-shirt",
+  49: "rudraaksha-stylish-dress-for-women",
+  50: "fabflee-party-flared-sleeves-printed-women-yellow-top",
+  51: "shrug-with-shawl-lapel",
+  55: "elegant-coffee-table",
+  56: "queen-size-platform-bed",
+  57: "classic-nightstand",
+  58: "modern-velvet-sofa",
+  60: "potato",
+  61: "cauliflower-1-pc",
+  62: "beetroot",
+  63: "tomato",
+  64: "onion",
+  65: "carrot",
+  66: "red-capsicum",
+  67: "coriander-bunch",
+  68: "brinjal-black-big",
+  69: "lemon",
+  70: "corn",
+  71: "curate-apple-red-delicious-usa-premium-imported",
+  72: "banana",
+  73: "pomegranate",
+  74: "orange",
+  77: "grapes",
+  78: "pineapple",
+  79: "mango",
+  80: "strawberry",
+  82: "raspberry",
+  83: "blackberry",
+  84: "cherry",
+  85: "pears-green-imported",
+  101: "amul-butter-500-g",
+  102: "amul-fresh-paneer-200-g",
+  103: "britannia-cheese-slices-200-g",
+  104: "mother-dairy-classic-curd-400-g",
+  105: "tata-tea-gold-500-g",
+  106: "nescafe-classic-instant-coffee-100-g",
+  107: "real-fruit-power-mixed-fruit-juice-1-l",
+  108: "bisleri-mineral-water-1-l",
+  109: "ceramic-table-lamp-with-linen-shade",
+  110: "round-wall-mirror-with-brass-frame-60-cm",
+  111: "abstract-canvas-wall-art-set-of-3-framed",
+  112: "cotton-bedsheet-set-queen-with-2-pillow-covers",
+  113: "fig-women-cotton-printed-straight-kurta",
+  114: "rudraaksha-women-wide-leg-palazzo-trousers",
+  115: "fig-women-light-wash-denim-jacket",
+  116: "rudraaksha-women-floral-print-maxi-skirt",
+  117: "boat-airdopes-141-true-wireless-earbuds",
+  118: "jbl-go-3-portable-bluetooth-speaker",
+  119: "noise-buds-vs104-true-wireless-earbuds",
+  120: "boat-stone-352-bluetooth-speaker",
+};
 export const applyPhotos = (catalog) =>
   catalog.map((category) => ({
     ...category,
     items: category.items.map((section) => ({
       ...section,
       products: section.products.map((product) => {
-        if (!ids.has(Number(product.id))) return product;
-        const src = `/images/generated/${Number(product.id)}.webp`;
-        return { ...product, catImg: src, productImages: [src] };
+        const id = Number(product.id);
+        if (!ids.has(id)) return product;
+        const slug = slugs[id];
+        if (!slug) return product;
+        const suffix = modelIds.has(id) ? "model" : "scene";
+        const img = `/images/generated/${slug}-${suffix}.webp`;
+        return { ...product, catImg: img, productImages: [img] };
       }),
     })),
   }));
