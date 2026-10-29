@@ -165,6 +165,7 @@ const handleAddToCart = () => {
                     </Link>
                   </h3>
 
+                  {productData.rating ? (
                   <div className='flex items-center text-sm dark:text-white dark:opacity-100 mb-3'>
                     <Rating
                       name='half-rating-read'
@@ -179,6 +180,7 @@ const handleAddToCart = () => {
                       </span>
                     </div>
                   </div>
+                  ) : null}
                   <p className='text-md dark:text-black dark:opacity-100 line-clamp-4'>
                     {productData.description}
                   </p>
@@ -186,14 +188,16 @@ const handleAddToCart = () => {
                     <span className='current-price text-brand'>
                       ₹{productData.price}
                     </span>
-                    <span>
-                      <span className='save-price  ml-[15px]'>
-                        {productData.discount}% Off
+                    {productData.oldPrice > productData.price && (
+                      <span>
+                        <span className='save-price  ml-[15px]'>
+                          {productData.discount}% Off
+                        </span>
+                        <span className='old-price font-md ml-[15px]'>
+                          ₹{productData.oldPrice}
+                        </span>
                       </span>
-                      <span className='old-price font-md ml-[15px]'>
-                        ₹{productData.oldPrice}
-                      </span>
-                    </span>
+                    )}
                   </div>
                   <div className='detail-extralink'>
                     <div className='detail-qty border radius'>

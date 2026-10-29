@@ -123,9 +123,11 @@ export default function ProductDetailsPage() {
             {product.brand} / {product.subcategory}
           </p>
           <h1>{product.productName}</h1>
-          <p className="ww-rating">
-            <span aria-hidden="true">★</span> {product.rating} out of 5
-          </p>
+          {product.rating ? (
+            <p className="ww-rating">
+              <span aria-hidden="true">★</span> {product.rating} out of 5
+            </p>
+          ) : null}
           <div className="ww-detail-price">
             <strong>{money(product.price)}</strong>
             {product.oldPrice > product.price && (

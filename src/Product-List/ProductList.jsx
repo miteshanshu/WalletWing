@@ -49,7 +49,7 @@ export default function ProductList() {
     .sort((a, b) => {
       if (sort === "price-up") return a.price - b.price;
       if (sort === "price-down") return b.price - a.price;
-      if (sort === "rating") return b.rating - a.rating;
+      if (sort === "rating") return (b.rating || 0) - (a.rating || 0);
       if (sort === "name-desc")
         return b.productName.localeCompare(a.productName);
       return a.productName.localeCompare(b.productName);

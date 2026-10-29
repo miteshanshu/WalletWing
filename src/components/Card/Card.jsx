@@ -60,13 +60,15 @@ export default function Card({ productData: product }) {
         <Link className="ww-product-name" to={`/product/details/${product.id}`}>
           {product.productName}
         </Link>
-        <span
-          className="ww-rating"
-          aria-label={`Rated ${product.rating} out of 5`}
-        >
-          <span aria-hidden="true">★</span> {product.rating}{" "}
-          <span className="ww-muted">/ 5</span>
-        </span>
+        {product.rating ? (
+          <span
+            className="ww-rating"
+            aria-label={`Rated ${product.rating} out of 5`}
+          >
+            <span aria-hidden="true">★</span> {product.rating}{" "}
+            <span className="ww-muted">/ 5</span>
+          </span>
+        ) : null}
         <div className="ww-price">
           <strong>{money(product.price)}</strong>
           {discount > 0 && <del>{money(product.oldPrice)}</del>}
