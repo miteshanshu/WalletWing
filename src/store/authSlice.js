@@ -1,133 +1,107 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { auth } from "./firebaseConfig";
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth, authUnavailableMessage } from "./firebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  signOut,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
 
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { signInWithEmailAndPassword } from "firebase/auth";
-
-// Async thunk for signing in
-export const signIn = createAsyncThunk(
+export const publicUser = (user) =>
+  user
+    ? {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        username: user.displayName,
+        photoURL: user.photoURL,
+      }
+    : null;
+const errorMessage = (error) =>
+  ({
+    "auth/invalid-credential": "The email or password is incorrect.",
+    "auth/email-already-in-use": "An account already exists for this email.",
+    "auth/weak-password": "Choose a password with at least 6 characters.",
+    "auth/popup-closed-by-user": "Sign-in was cancelled.",
+    "auth/popup-blocked": "Allow pop-ups for this site to use Google sign-in.",
+    "auth/unauthorized-domain": "Sign-in is not enabled on this address yet.",
+    "auth/too-many-requests": "Too many attempts. Please try again later.",
+    "auth/network-request-failed": "Check your connection and try again.",
+  })[error.code] || "Sign-in could not be completed. Please try again.";
+const authTask = (name, operation) =>
+  createAsyncThunk(name, async (input, { rejectWithValue }) => {
+    if (!auth) return rejectWithValue(authUnavailableMessage);
+    try {
+      return publicUser(await operation(input));
+    } catch (error) {
+      return rejectWithValue(errorMessage(error));
+    }
+  });
+export const signIn = authTask(
   "auth/signIn",
-  async ({ email, password }, { rejectWithValue }) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      return userCredential.user;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
+  async ({ email, password }) =>
+    (await signInWithEmailAndPassword(auth, email.trim(), password)).user,
 );
-
-export const signUp = createAsyncThunk(
+export const signUp = authTask(
   "auth/signUp",
-  async ({ email, password, username }, { rejectWithValue }) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-      const userWithUsername = {
-        ...userCredential.user,
-        username,
-      };
-      return userWithUsername;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
+  async ({ email, password, username }) => {
+    const { user } = await createUserWithEmailAndPassword(
+      auth,
+      email.trim(),
+      password,
+    );
+    await updateProfile(user, { displayName: username.trim() });
+    return user;
+  },
 );
-
-// Async thunk for Google sign-in/sign-up
-export const signInWithGoogle = createAsyncThunk(
+export const signInWithGoogle = authTask(
   "auth/signInWithGoogle",
-  async (_, { rejectWithValue }) => {
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      // The signed-in user info.
-      const user = result.user;
-      return user;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
+  async () => (await signInWithPopup(auth, new GoogleAuthProvider())).user,
 );
-
-// Async thunk for signing out
 export const signOutUser = createAsyncThunk("auth/signOut", async () => {
-  await signOut(auth);
+  if (auth) await signOut(auth);
 });
-
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    auth: false,
     user: null,
-    error: null,
+    auth: false,
+    ready: !auth,
     loading: false,
-    username: null,
-    isNewUser: false,
+    error: null,
   },
-  reducers: {},
+  reducers: {
+    setAuthUser(state, { payload }) {
+      state.user = payload;
+      state.auth = !!payload;
+      state.ready = true;
+    },
+  },
   extraReducers: (builder) => {
-    builder
-      .addCase(signIn.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(signIn.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.error = null;
-        state.isNewUser = false;
-        state.auth = true;
-      })
-      .addCase(signIn.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.auth = false;
-      })
-      .addCase(signOutUser.fulfilled, (state) => {
-        state.user = null;
-        state.auth = false;
-      })
-      .addCase(signUp.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(signUp.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.username = action.payload.username;
-        state.error = null;
-        state.isNewUser = true;
-        state.auth = true;
-      })
-      .addCase(signUp.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.auth = false;
-      })
-      .addCase(signInWithGoogle.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(signInWithGoogle.fulfilled, (state, action) => {
-        state.loading = false;
-        state.user = action.payload;
-        state.error = null;
-        state.isNewUser = false;
-        state.auth = true;
-      })
-      .addCase(signInWithGoogle.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.auth = false;
-      });
+    for (const task of [signIn, signUp, signInWithGoogle]) {
+      builder
+        .addCase(task.pending, (state) => {
+          state.loading = true;
+          state.error = null;
+        })
+        .addCase(task.fulfilled, (state, { payload }) => {
+          state.loading = false;
+          state.user = payload;
+          state.auth = !!payload;
+          state.error = null;
+        })
+        .addCase(task.rejected, (state, { payload }) => {
+          state.loading = false;
+          state.error = payload;
+        });
+    }
+    builder.addCase(signOutUser.fulfilled, (state) => {
+      state.user = null;
+      state.auth = false;
+    });
   },
 });
-
+export const { setAuthUser } = authSlice.actions;
 export default authSlice.reducer;
