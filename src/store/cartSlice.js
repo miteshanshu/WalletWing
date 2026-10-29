@@ -1,94 +1,99 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {
+  cartKey,
+  cartTotals,
+  normalizeCart,
+  quantityOf,
+} from "../utils/cart.js";
 
 const initialState = {
   cart: [],
-  subTotal: 0,
-  discount: 0,
-  promoCode: '',
+  ...cartTotals(),
+  promoCode: "",
   promoCodeApplied: false,
 };
-
+const updateTotals = (state) => {
+  state.cart = normalizeCart(state.cart);
+  if (!state.cart.length) {
+    state.promoCode = "";
+    state.promoCodeApplied = false;
+  }
+  Object.assign(state, cartTotals(state.cart, state.promoCodeApplied));
+};
 const cartSlice = createSlice({
-  name: 'cart',
+  name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const { product, quantity } = action.payload;
-      const index = state.cart.findIndex((item) => item.id === product.id);
-      if (index >= 0) {
-        state.cart[index].quantity += quantity;
-        state.cart[index].total = state.cart[index].quantity * product.price;
-      } else {
-        state.cart.push({
-          ...product,
-          quantity,
-          total: product.price * quantity,
-        });
-      }
-      state.subTotal += product.price * quantity;
+    addToCart(state, { payload }) {
+      const { product, quantity = 1 } = payload;
+      if (
+        !product ||
+        product.inStock === false ||
+        product.stockStatus === "Out of Stock" ||
+        !Number.isFinite(Number(product.price)) ||
+        Number(product.price) < 0 ||
+        !Number.isFinite(Number(quantity)) ||
+        Number(quantity) <= 0
+      )
+        return;
+      const existing = state.cart.find(
+        (item) => cartKey(item) === cartKey(product),
+      );
+      if (existing)
+        existing.quantity = quantityOf(existing.quantity + Number(quantity));
+      else state.cart.push({ ...product, quantity: quantityOf(quantity) });
+      updateTotals(state);
     },
-    increaseQuantityInCart: (state, action) => {
-      const product = action.payload;
-      const index = state.cart.findIndex((item) => item.id === product.id);
-      if (index >= 0) {
-        state.cart[index].quantity += 1;
-        state.cart[index].total = state.cart[index].quantity * product.price;
-        state.subTotal += product.price;
-      }
+    increaseQuantityInCart(state, { payload }) {
+      const item = state.cart.find(
+        (item) => cartKey(item) === cartKey(payload),
+      );
+      if (item) item.quantity = quantityOf(item.quantity + 1);
+      updateTotals(state);
     },
-    decreaseQuantityInCart: (state, action) => {
-      const product = action.payload;
-      const index = state.cart.findIndex((item) => item.id === product.id);
-      if (index >= 0 && state.cart[index].quantity > 1) {
-        state.cart[index].quantity -= 1;
-        state.cart[index].total = state.cart[index].quantity * product.price;
-        state.subTotal -= product.price;
-      }
+    decreaseQuantityInCart(state, { payload }) {
+      const item = state.cart.find(
+        (item) => cartKey(item) === cartKey(payload),
+      );
+      if (item) item.quantity = quantityOf(item.quantity - 1);
+      updateTotals(state);
     },
-    removeItem: (state, action) => {
-      const product = action.payload;
-      const index = state.cart.findIndex((item) => item.id === product.id);
-      if (index >= 0) {
-        state.subTotal -= state.cart[index].total;
-        state.cart.splice(index, 1);
-      }
+    removeItem(state, { payload }) {
+      state.cart = state.cart.filter(
+        (item) => cartKey(item) !== cartKey(payload),
+      );
+      updateTotals(state);
     },
-    applyPromoCode: (state, action) => {
-      const promoCode = action.payload;
-      if (!state.promoCodeApplied && promoCode === 'PROMO10') {
-        state.discount = state.total * 0.1;
-        state.total -= state.discount;
-        state.promoCode = promoCode;
+    applyPromoCode(state, { payload }) {
+      if (
+        state.cart.length &&
+        String(payload).trim().toUpperCase() === "PROMO10"
+      ) {
+        state.promoCode = "PROMO10";
         state.promoCodeApplied = true;
+        updateTotals(state);
       }
     },
-addTotal: (state, action) => {
-  state.total = action.payload;
-  if (state.promoCodeApplied && state.promoCode === 'PROMO10') {
-    state.discount = state.total * 0.1;
-    state.total -= state.discount;
-  }
-},
-
-    clearCart: (state) => {
-      state.cart = [];
-      state.discount = 0;
-      state.quantity = 0;
-      state.promoCode = '';
-      state.total = 0;
-      state.subTotal = 0;
+    removePromoCode(state) {
+      state.promoCode = "";
       state.promoCodeApplied = false;
+      updateTotals(state);
     },
+    // Retained for callers from older versions; totals always come from cart contents.
+    addTotal(state) {
+      updateTotals(state);
+    },
+    clearCart: () => initialState,
   },
 });
-
 export const {
   addToCart,
-  removeItem,
-  clearCart,
-  addTotal,
-  applyPromoCode,
   increaseQuantityInCart,
   decreaseQuantityInCart,
+  removeItem,
+  applyPromoCode,
+  removePromoCode,
+  addTotal,
+  clearCart,
 } = cartSlice.actions;
 export default cartSlice.reducer;
