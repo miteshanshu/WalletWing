@@ -133,6 +133,9 @@ img {
 .dark .ww-button:hover {
   color: white;
 }
+.dark .ww-button-soft {
+  color: var(--ww-ink);
+}
 .ww-button-outline {
   background: transparent;
   color: var(--ww-green);
