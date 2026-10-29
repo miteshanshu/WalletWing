@@ -482,7 +482,7 @@ img {
 .ww-card-image {
   position: relative;
   padding: 18px;
-  background: white;
+  background: var(--ww-paper);
 }
 .ww-card-image > a {
   display: block;
@@ -859,7 +859,7 @@ img {
   min-width: 0;
 }
 .ww-main-image {
-  background: white;
+  background: var(--ww-paper);
   border: 1px solid var(--ww-line);
   border-radius: 16px;
   aspect-ratio: 1/1;
@@ -880,7 +880,7 @@ img {
 .ww-thumbnails button {
   flex: 0 0 76px;
   height: 76px;
-  background: white;
+  background: var(--ww-paper);
   border: 1px solid var(--ww-line);
   border-radius: 8px;
   padding: 7px;
