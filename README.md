@@ -2,6 +2,8 @@
 
 A responsive storefront demo built with React, Vite, Redux Toolkit and Firebase Authentication. The mobile update retains the original catalog and branding, with layouts for phones, tablets and desktop screens.
 
+[Open the live demo](https://wallet-wing.vercel.app)
+
 ## Features
 
 - Searchable catalog with category and subcategory routes, brand and price filters, sorting and pagination.
@@ -32,7 +34,7 @@ The optional `VITE_CATALOG_URL` overrides the endpoint in `src/store/dataSlice.j
 - Firebase owns the authentication session. User credentials and Firebase user objects are not copied into Redux Persist.
 - The demo calculates 10% tax, ₹100 delivery below a ₹500 subtotal, and a `PROMO10` discount of 10% on subtotal plus tax and delivery. These are demo rules, not tax advice or a live merchant policy.
 - The contact form opens a prefilled email draft in the visitor's own email app. It does not send automatically.
-- Ratings, prices and stock come from sample catalog data. Several original external product-photo URLs return HTTP 404; those products display an explicit unavailable-image fallback. Replace `catImg` and `productImages` with maintained images before using this as a live store.
+- Ratings, prices and stock come from sample catalog data. Product photos ship with the app as local files, so the catalog never depends on outside image links.
 
 A production store would need a backend for inventory, orders, pricing validation and payment processing.
 
